@@ -15,6 +15,7 @@ from google.colab import drive
 import json, sys
 
 app_data_file = os.path.join (mainDir, "app-dat.json")
+trial = 0
 
 
 #########################
@@ -73,15 +74,12 @@ def check_repo_exists () -> bool:
         return True
 
     except:
-        return False
+        if trial < 5:
+            usr.create_repo (app_data ['repo-name'])
+            trial += 1
+            return check_repo_exists ()
 
-
-def create_repo () -> bool:
-    usr = git.get_user ()
-
-    usr.create_repo (app_data ['repo-name'])
-
-    return check_repo_exists ()
+        else: return False
 
 
 #############################################
@@ -141,11 +139,13 @@ def main ():
     print (wd)
     files_description = get_files_description (wd)
 
-    for fp, cont in files_description.items ():
-        if fp != "FILE-PATH":
-            if add_to_repo (fp, cont):
-                print_success (f"Successfully file uploaded to the path '{fp}'.")
+    if check_repo_exists ():
+        for fp, cont in files_description.items ():
+            if fp != "FILE-PATH":
+                if add_to_repo (fp, cont):
+                    print_success (f"Successfully file uploaded to the path '{fp}'.")
 
+    else: print_error ("Jani na ki holo !")
 
 if __name__ == "__main__":
     main ()
