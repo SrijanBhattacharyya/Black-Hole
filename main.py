@@ -61,6 +61,29 @@ def get_app_data () -> dict:
         return dict (json.load (f))
 
 
+##################################
+### Check if Repository Exists ###
+##################################
+
+def check_repo_exists () -> bool:
+    usr = git.get_user ()
+
+    try:
+        repo = usr.get_repo (app_data ['repo-name'])
+        return True
+
+    except:
+        return False
+
+
+def create_repo () -> bool:
+    usr = git.get_user ()
+
+    usr.create_repo (app_data ['repo-name'])
+
+    return check_repo_exists ()
+
+
 #############################################
 ### Function to Add to a Given Repository ###
 #############################################
